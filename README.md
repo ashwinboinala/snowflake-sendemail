@@ -1,2 +1,4 @@
 # snowflake-sendemail
-Send Email notifications from Snowflake
+Send Email notifications from Snowflake using AWS Lambda
+
+
