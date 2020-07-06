@@ -84,20 +84,20 @@ zip -r9 ../pysnowflake.zip .
 
 4) Create a Lambda layer.
 
-    i) Log into AWS account.
-    ii) Click on AWS Lambda service.
-    iii) Under layers tab, Click on Create Layer.
-    iv) Enter Name, Description, Select "Upload a .zip file" and click on Upload and select the zip file pysnowflake.zip
-    v) Select Python version I am using Python3.7.
-    vi) Click on Create, this will create a new layer.
+    - Log into AWS account.
+    - Click on AWS Lambda service.
+    - Under layers tab, Click on Create Layer.
+    - Enter Name, Description, Select "Upload a .zip file" and click on Upload and select the zip file pysnowflake.zip
+    - Select Python version I am using Python3.7.
+    - Click on Create, this will create a new layer.
 
 5) Create new Lambda function and attach layer.
 
 
+- Create new Python Lambda function.
 
 ``` python
 
-#Create new Python Lambda with below Code.
 #Enter following values.
 #SENDER, ADMINEMAIL, region_name, user, password, account, warehouse, database, and schema
 
@@ -195,13 +195,14 @@ def lambda_handler(event, context):
         'body': json.dumps('Hello from Lambda!')
     }
 
-#Create a Role with SES access and attach it to Lambda.
-#Under layer select the newly created layer.
-#Change the max timeout value to 15 mins and memory to 512 MB.
 
 ```
 
-6) You can schedule this Lambda using AWS Cloudwatch Events rules(Schedule it every min)
+- Create a Role with SES access and attach it to Lambda.
+- Under layer select the newly created layer.
+- Change the max timeout value to 15 mins and memory to 512 MB.
+
+6) You can schedule this Lambda using AWS Cloudwatch Events rules(Every min)
 
 7) Test notifications by running the SP. This will Insert a record into Notifcations table and it will processed by Aws Lambda Function.
 
