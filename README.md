@@ -91,7 +91,7 @@ zip -r9 ../pysnowflake.zip .
     - Select Python version I am using Python3.7.
     - Click on Create, this will create a new layer.
 
-5) Create new Lambda function and attach layer.
+5) Create new Lambda function.
 
 
 - Create new Python Lambda function.
@@ -199,7 +199,7 @@ def lambda_handler(event, context):
 ```
 
 - Create a Role with SES access and attach it to Lambda.
-- Under layer select the newly created layer.
+- Select the newly created layer.
 - Change the max timeout value to 15 mins and memory to 512 MB.
 
 6) You can schedule this Lambda using AWS Cloudwatch Events rules(Every min)
