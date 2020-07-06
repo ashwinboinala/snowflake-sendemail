@@ -58,6 +58,8 @@ create or replace table "ADMIN"."PUBLIC"."NOTIFICATIONLIST"
 
 3) Need to create a Lambda layer for Python Snowflake connector module and attach it to the Lambda. Below are the steps to create a Layer.
 
+- Create Zip file
+
 ``` bash
 
 #Create a folder
@@ -82,7 +84,7 @@ zip -r9 ../pysnowflake.zip .
 
 ```
 
-4) Create a Lambda layer.
+- Create a Lambda layer.
 
     - Log into AWS account.
     - Click on AWS Lambda service.
@@ -91,10 +93,10 @@ zip -r9 ../pysnowflake.zip .
     - Select Python version I am using Python3.7.
     - Click on Create, this will create a new layer.
 
-5) Create new Lambda function.
+4) Create new Lambda function.
 
 
-- Create new Python Lambda function.
+- Lambda function.(Requires new role with SES send_email access)
 
 ``` python
 
@@ -198,13 +200,12 @@ def lambda_handler(event, context):
 
 ```
 
-- Create a Role with SES access and attach it to Lambda.
-- Select the newly created layer.
+- Attach the newly created layer.
 - Change the max timeout value to 15 mins and memory to 512 MB.
 
-6) You can schedule this Lambda using AWS Cloudwatch Events rules(Every min)
+5) You can schedule this Lambda using AWS Cloudwatch Event rules(Every min)
 
-7) Test notifications by running the SP. This will Insert a record into Notifcations table and it will processed by Aws Lambda Function.
+6) Test notifications by running the SP. This will Insert a record into Notifcations table and it will be processed by Aws Lambda Function.
 
 ``` sql
 
