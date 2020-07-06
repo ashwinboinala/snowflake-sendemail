@@ -1,102 +1,3 @@
-## snowflake-sendemail
-Send Email notifications from Snowflake using AWS Lambda
-
-1) Create a notification table.
-
-``` sql
-create or replace table "ADMIN"."PUBLIC"."NOTIFICATIONLIST"
-(
-    id number default IDT.nextval,
-    to_address varchar not null,
-    subject varchar not null,
-    message varchar not null,
-    isprocessed BOOLEAN DEFAULT FALSE,
-    err_message VARCHAR(500) DEFAULT NULL, 
-    createddate  TIMESTAMP_LTZ DEFAULT CURRENT_TIMESTAMP()
-);
-
-```
-
-2) Create Stored Procedure
-
-``` sql
- CREATE OR REPLACE PROCEDURE sendmail(TOADDRESS VARCHAR,SUBJECT VARCHAR,MESSAGE VARCHAR)
-  RETURNS varchar
-  LANGUAGE JAVASCRIPT
-  EXECUTE AS CALLER
-  AS
-  $$
-  
-  try {
-      
-      var row_as_json = {};     
-      row_as_json['to'] = TOADDRESS
-      row_as_json['subject'] = SUBJECT
-      row_as_json['message'] = MESSAGE
-      
-      sql_command = `INSERT INTO ADMIN.PUBLIC.NOTIFICATIONLIST(TO_ADDRESS,SUBJECT,MESSAGE) VALUES(:1, :2, :3);` 
-           
-      
-      result = snowflake.execute(
-        { 
-        sqlText: sql_command,
-         binds: [TOADDRESS,SUBJECT,MESSAGE] 
-        }
-        ); 
-      
-      return 'Success'
-      
-      }
-  catch (err)  {
-        
-      return 'Failed: '+err
-      }
-  $$
-  ;
-
-```
-
-3) I am using Snowflake Python connector module to read the notificationlist table and we need to create a Lambda layer for Snowflake connector and attach it to the Lamabda. Below are the steps to create a Layer.
-
-``` bash
-
-#Create a folder
-
-mkdir -p snowconnector/python
-
-#Change Dir
-cd snowconnector/python
-
-#Install Module, I am using Python3.7.
-
-pip3.7 install snowflake-connector-python -t .
-
-#Change Dir
-cd ..
-
-#Zip it
-
-zip -r9 ../pysnowflake.zip .
-
-
-
-```
-
-4) Create a Lambda layer.
-
-    i) Log into AWS account.
-    ii) Click on AWS Lambda service.
-    iii) Under layers tab, Click on Create Layer.
-    iv) Enter Name, Description, Select "Upload a .zip file" and click on Upload and select the zip file pysnowflake.zip
-    v) Select Python version I am using Python3.7.
-    vi) Click on Create, this will create a new layer.
-
-5) Create new Lambda function and attach layer.
-
-
-
-``` python
-
 #Create new Python Lambda with below Code.
 #Enter following values.
 #SENDER, ADMINEMAIL, region_name, user, password, account, warehouse, database, and schema
@@ -117,8 +18,8 @@ for name in logging.Logger.manager.loggerDict.keys():
              logging.getLogger(name).propagate = False
 
 CHARSET = "UTF-8"
-SENDER = #Sender Email
-ADMINEMAIL = #Enter admin email address ex: ['admin@email.com']
+SENDER = '@email.com'#Sender Email
+ADMINEMAIL = 'email.com' #Enter admin email address ex: ['admin@email.com'] or a list with (,) separated
 
 
 html_body = """<html>
@@ -198,16 +99,3 @@ def lambda_handler(event, context):
 #Create a Role with SES access and attach it to Lambda.
 #Under layer select the newly created layer.
 #Change the max timeout value to 15 mins and memory to 512 MB.
-
-```
-
-6) You can schedule this Lambda using AWS Cloudwatch Events rules(Schedule it every min)
-
-7) Test notifications by running the SP. This will Insert a record into Notifcations table and it will processed by Aws Lambda Function.
-
-``` sql
-
-CALL SENDMAIL('Enter your email address(you can add multiple email address with comma(,) separated.)','Hello','Hello from Snowflake');
-
-```
-
