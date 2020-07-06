@@ -56,7 +56,7 @@ create or replace table "ADMIN"."PUBLIC"."NOTIFICATIONLIST"
 
 ```
 
-3) I am using Snowflake Python connector module to read the notificationlist table and we need to create a Lambda layer for Snowflake connector and attach it to the Lamabda. Below are the steps to create a Layer.
+3) Need to create a Lambda layer for Python Snowflake connector module and attach it to the Lambda. Below are the steps to create a Layer.
 
 ``` bash
 
